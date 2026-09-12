@@ -66,20 +66,29 @@ if user_prompt:
             f"Prompt telemetry: {user_prompt}\nResponse:"
         )
         
-        # Route processing through remote cloud transport pipelines
+        # FIXED ROUTING LANE: Connects natively to the globally redundant production engine endpoint
         gemini_url = f"https://googleapis.com{API_KEY}"
-        gemini_payload = {"contents": [{"parts": [{"text": master_prompt}]}]}
+        gemini_payload = {
+            "contents": [
+                {
+                    "parts": [
+                        {"text": master_prompt}
+                    ]
+                }
+            ]
+        }
         
         with st.chat_message("assistant"):
             with st.spinner("Processing cognitive telemetry matrices..."):
                 try:
                     res = httpx.post(gemini_url, json=gemini_payload, headers={"Content-Type": "application/json"}, timeout=30.0)
                     if res.status_code == 200:
-                        ai_response = res.json()["candidates"]["content"]["parts"]["text"].strip()
+                        ai_response = res.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
                     else:
-                        ai_response = f"Matrix sync fault. Server responded with status code: {res.status_code}."
+                        ai_response = f"Matrix sync fault. Server responded with status code: {res.status_code}. Details: {res.text}"
                 except Exception as e:
                     ai_response = f"Cloud processing lane exception occurred: {e}"
             
             st.markdown(ai_response)
             st.session_state.history.append({"role": "assistant", "content": ai_response})
+
