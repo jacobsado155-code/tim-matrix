@@ -19,7 +19,7 @@ st.markdown("""
 # ==========================================
 # TIM CORE FIXED HARDCODED KEY ALLOCATION
 # ==========================================
-API_KEY = "PASTE_YOUR_WORKING_KEY_HERE"
+API_KEY = "AQ.Ab8RN6LpUK11tdaOUCmS01hdHGgsI2v6FNg-F5YXEvLx2atoZw"
 
 # Sidebar System Monitor Metrics Panel
 with st.sidebar:
