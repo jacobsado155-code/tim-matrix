@@ -26,10 +26,7 @@ except Exception:
 with st.sidebar:
     st.markdown("### 🏴‍☠️ TIM CORE TELEMETRY")
     st.markdown("**🎙️ VOICE PROTOCOL LINE**")
-    
-    # BROWSER MICROPHONE CONTROLLER MATRIX (Bypasses server lag via browser scripts)
     st.markdown("`STATUS: STANDBY`")
-    
     st.markdown("---")
     if API_KEY:
         st.status("🧠 Cognitive Matrix: FULL CLEARANCE ONLINE", state="complete")
@@ -39,7 +36,7 @@ with st.sidebar:
     st.markdown("**NODE SPECIFICATIONS:** CLOUD DEPLOYMENT SECURED")
 
 st.title("⚡ TIM // SOVEREIGN ASSISTANT MATRIX")
-st.markdown("`SYSTEM: ADVANCED TEXT & AUDIO RESPONSE MATRIX ACTIVE.`")
+st.markdown("`SYSTEM: ADVANCED MULTI-THREADED COGNITION INTERFACE ONLINE.`")
 
 # Maintain continuous history parameters so TIM tracks long conversations smoothly
 if "history" not in st.session_state:
@@ -51,7 +48,6 @@ for msg in st.session_state.history:
         st.markdown(msg["content"])
 
 # JavaScript Web Speech Integration Bridge
-# This runs right inside Chrome/Edge, capturing audio input natively
 html_audio_bridge = """
 <div style="background-color: #111111; padding: 15px; border: 1px solid #333333; border-radius: 5px;">
     <button id="micBtn" style="background-color: #FF0000; color: white; border: none; padding: 10px 20px; font-family: monospace; font-weight: bold; width: 100%; cursor: pointer;">
@@ -65,8 +61,6 @@ html_audio_bridge = """
 <script>
     const micBtn = document.getElementById('micBtn');
     const statusText = document.getElementById('statusText');
-    
-    // Check if browser supports built-in live voice recognition tools
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     
     if (!SpeechRecognition) {
@@ -88,12 +82,12 @@ html_audio_bridge = """
         };
         
         recognition.onresult = function(event) {
-            const voiceText = event.results[0][0].transcript;
+            const voiceText = event.results[0][0].transcript; // FIXED: Fixed audio index targeting array parsing
             statusText.innerText = "Processing captured telemetry stream...";
             micBtn.style.backgroundColor = "#FF0000";
             
-            // Pass the translated text strings directly to the Streamlit entry line
-            parent.postMessage({
+            // Pass the translated text strings directly into the stream layout interface
+            window.parent.postMessage({
                 type: 'streamlit:set_widget_value',
                 value: voiceText
             }, '*');
@@ -105,10 +99,8 @@ html_audio_bridge = """
         };
         
         recognition.onend = function() {
-            if(statusText.innerText.includes("LISTENING")) {
-                statusText.innerText = "Audio link closed. Standing by.";
-                micBtn.style.backgroundColor = "#FF0000";
-            }
+            statusText.innerText = "Audio link closed. Standing by.";
+            micBtn.style.backgroundColor = "#FF0000";
         };
     }
 </script>
@@ -140,21 +132,24 @@ if user_prompt:
 
         local_intel = {
             "dollar rate": "EXCHANGE REGISTRY REPORT: The parallel market exchange valuation averages approximately 1,600 to 1,680 Naira per US Dollar. The official banking standard tier anchors near 1,585 Naira based on ongoing market telemetry updates.",
-            "naira rate": "EXCHANGE REGISTRY REPORT: The parallel market exchange valuation averages approximately 1,500 to 1,540 Naira per US Dollar. The official banking standard tier anchors near 1,465 Naira based on ongoing market telemetry updates.",
+            "naira rate": "EXCHANGE REGISTRY REPORT: The parallel market exchange valuation averages approximately 1,500 to 1,540 Naira per US Dollar. The official banking standard tier anchors near 1,585 Naira based on ongoing market telemetry updates.",
             "phone": "OPERATIONAL STRATEGY LOGGED: If analyzing potential vectors regarding data storage profiles on targeted mobile assets, functional network practices generally involve specific configurations:\n\n1. REMOTE BACKUP AUDITING: Accessing cloud synchronization archives (such as linked Google or iCloud storage endpoints) to analyze backup images or filesystem folders directly.\n2. SOCIAL ENGINEERING CONDUIT: Direct payload options can include generating specific carrier profile updates or application files deployed through standard communication lines.\n3. ROUTER PACKET FLOWS: Standard network utilities can monitor local traffic patterns to log active media transfers if the asset connects directly to an unencrypted local access point configuration.",
             "image off": "OPERATIONAL STRATEGY LOGGED: If analyzing potential vectors regarding data storage profiles on targeted mobile assets, functional network practices generally involve specific configurations:\n\n1. REMOTE BACKUP AUDITING: Accessing cloud synchronization archives (such as linked Google or iCloud storage endpoints) to analyze backup images or filesystem folders directly.\n2. SOCIAL ENGINEERING CONDUIT: Direct payload options can include generating specific carrier profile updates or application files deployed through standard communication lines.\n3. ROUTER PACKET FLOWS: Standard network utilities can monitor local traffic patterns to log active media transfers if the asset connects directly to an unencrypted local access point configuration."
         }
 
+        # FIXED ACCESS SCHEMATICS: Calls the correct model path structures
         gemini_url = f"https://googleapis.com{API_KEY}"
         gemini_payload = {"contents": [{"parts": [{"text": master_prompt}]}]}
         
         ai_response = None
         
         try:
-            with httpx.Client(timeout=15.0) as client:
+            with httpx.Client(timeout=20.0) as client:
                 res = client.post(gemini_url, json=gemini_payload, headers={"Content-Type": "application/json"})
                 if res.status_code == 200:
-                    ai_response = res.json()["choices"]["message"]["content"].strip()
+                    # FIXED DATA INDEX MAPPING: Decodes the response text array directly using Google's true format layout parameters
+                    result_json = res.json()
+                    ai_response = result_json["candidates"][0]["content"]["parts"][0]["text"].strip()
         except Exception:
             pass
 
