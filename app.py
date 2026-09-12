@@ -1,6 +1,7 @@
 import streamlit as st
 import httpx
 import json
+import streamlit.components.v1 as components
 
 # Configure high-tech dark mode window metrics natively in browser
 st.set_page_config(page_title="TIM :: INTELLIGENCE CORE MATRIX", layout="wide", initial_sidebar_state="expanded")
@@ -24,13 +25,11 @@ except Exception:
 # Sidebar System Monitor Metrics Panel
 with st.sidebar:
     st.markdown("### 🏴‍☠️ TIM CORE TELEMETRY")
+    st.markdown("**🎙️ VOICE PROTOCOL LINE**")
     
-    # 🎙️ AUDIO CAPTURE PORTAL: Renders a browser-native voice recognition assistant module
-    st.markdown("**🎙️ VOICE PROTOCOL ACTIVATION**")
-    voice_trigger = st.button("🔴 ENGAGE LIVE AUDIO CHANNEL", use_container_width=True)
-    if voice_trigger:
-        st.info("Browser microphone channel listening... Speak firmly.")
-        
+    # BROWSER MICROPHONE CONTROLLER MATRIX (Bypasses server lag via browser scripts)
+    st.markdown("`STATUS: STANDBY`")
+    
     st.markdown("---")
     if API_KEY:
         st.status("🧠 Cognitive Matrix: FULL CLEARANCE ONLINE", state="complete")
@@ -40,7 +39,7 @@ with st.sidebar:
     st.markdown("**NODE SPECIFICATIONS:** CLOUD DEPLOYMENT SECURED")
 
 st.title("⚡ TIM // SOVEREIGN ASSISTANT MATRIX")
-st.markdown("`SYSTEM: ADVANCED MULTI-THREADED TEXT INTELLIGENCE CORE ACTIVE.`")
+st.markdown("`SYSTEM: ADVANCED TEXT & AUDIO RESPONSE MATRIX ACTIVE.`")
 
 # Maintain continuous history parameters so TIM tracks long conversations smoothly
 if "history" not in st.session_state:
@@ -51,11 +50,78 @@ for msg in st.session_state.history:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
+# JavaScript Web Speech Integration Bridge
+# This runs right inside Chrome/Edge, capturing audio input natively
+html_audio_bridge = """
+<div style="background-color: #111111; padding: 15px; border: 1px solid #333333; border-radius: 5px;">
+    <button id="micBtn" style="background-color: #FF0000; color: white; border: none; padding: 10px 20px; font-family: monospace; font-weight: bold; width: 100%; cursor: pointer;">
+        🎙️ ACTIVATE LIVE VOICE CHANNEL
+    </button>
+    <p id="statusText" style="color: #00AAFF; font-family: monospace; font-size: 12px; margin-top: 10px; text-align: center;">
+        Audio channel offline. Click to engage microphone.
+    </p>
+</div>
+
+<script>
+    const micBtn = document.getElementById('micBtn');
+    const statusText = document.getElementById('statusText');
+    
+    // Check if browser supports built-in live voice recognition tools
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (!SpeechRecognition) {
+        statusText.innerText = "Browser Audio API Blocked. Use Google Chrome.";
+    } else {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        
+        micBtn.onclick = function() {
+            try {
+                recognition.start();
+                statusText.innerText = "🔴 TIM LISTENING... Speak your command firmly.";
+                micBtn.style.backgroundColor = "#00FF00";
+            } catch(e) {
+                statusText.innerText = "System error initiating mic audio lane.";
+            }
+        };
+        
+        recognition.onresult = function(event) {
+            const voiceText = event.results[0][0].transcript;
+            statusText.innerText = "Processing captured telemetry stream...";
+            micBtn.style.backgroundColor = "#FF0000";
+            
+            // Pass the translated text strings directly to the Streamlit entry line
+            parent.postMessage({
+                type: 'streamlit:set_widget_value',
+                value: voiceText
+            }, '*');
+        };
+        
+        recognition.onerror = function(event) {
+            statusText.innerText = "Audio line cut. Error profile: " + event.error;
+            micBtn.style.backgroundColor = "#FF0000";
+        };
+        
+        recognition.onend = function() {
+            if(statusText.innerText.includes("LISTENING")) {
+                statusText.innerText = "Audio link closed. Standing by.";
+                micBtn.style.backgroundColor = "#FF0000";
+            }
+        };
+    }
+</script>
+"""
+
+# Render the continuous voice recognition bridge into the sidebar frame layout
+with st.sidebar:
+    components.html(html_audio_bridge, height=120)
+
 # Base Command Execution Prompt Input
 user_prompt = st.chat_input("COMMAND PROMPT > Input target instructions...")
 
 if user_prompt:
-    # Display user's command instantly
     with st.chat_message("user"):
         st.markdown(user_prompt)
     st.session_state.history.append({"role": "user", "content": user_prompt})
@@ -88,7 +154,7 @@ if user_prompt:
             with httpx.Client(timeout=15.0) as client:
                 res = client.post(gemini_url, json=gemini_payload, headers={"Content-Type": "application/json"})
                 if res.status_code == 200:
-                    ai_response = res.json()["choices"][0]["message"]["content"].strip()
+                    ai_response = res.json()["choices"]["message"]["content"].strip()
         except Exception:
             pass
 
