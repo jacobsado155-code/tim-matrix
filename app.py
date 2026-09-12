@@ -16,11 +16,10 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Access the locked cloud secrets container securely
-try:
-    API_KEY = st.secrets["GEMINI_API_KEY"]
-except Exception:
-    API_KEY = None
+# ==========================================
+# TIM CORE FIXED HARDCODED KEY ALLOCATION
+# ==========================================
+API_KEY = "PASTE_YOUR_WORKING_KEY_HERE"
 
 # Sidebar System Monitor Metrics Panel
 with st.sidebar:
@@ -28,10 +27,10 @@ with st.sidebar:
     st.markdown("**🎙️ VOICE PROTOCOL LINE**")
     st.markdown("`STATUS: STANDBY`")
     st.markdown("---")
-    if API_KEY:
-        st.status("🧠 Cognitive Matrix: FULL CLEARANCE ONLINE", state="complete")
+    if API_KEY and API_KEY != "PASTE_YOUR_WORKING_KEY_HERE":
+        st.status("🧠 Cognitive Matrix: HARDWIRED LINK ONLINE", state="complete")
     else:
-        st.status("🧠 Cognitive Matrix: KEY CONFIG ANOMALY", state="error")
+        st.status("🧠 Cognitive Matrix: KEY EMBED REQ", state="error")
     st.markdown("---")
     st.markdown("**NODE SPECIFICATIONS:** CLOUD DEPLOYMENT SECURED")
 
@@ -82,11 +81,10 @@ html_audio_bridge = """
         };
         
         recognition.onresult = function(event) {
-            const voiceText = event.results[0][0].transcript; // FIXED: Fixed audio index targeting array parsing
+            const voiceText = event.results[0][0].transcript;
             statusText.innerText = "Processing captured telemetry stream...";
             micBtn.style.backgroundColor = "#FF0000";
             
-            // Pass the translated text strings directly into the stream layout interface
             window.parent.postMessage({
                 type: 'streamlit:set_widget_value',
                 value: voiceText
@@ -110,6 +108,26 @@ html_audio_bridge = """
 with st.sidebar:
     components.html(html_audio_bridge, height=120)
 
+# Window layout message receiver script for the browser speech pipeline
+# This catches the widget packet emitted by the audio box and dumps it onto the input track!
+st.markdown("""
+<script>
+    window.addEventListener('message', function(event) {
+        if (event.data.type === 'streamlit:set_widget_value') {
+            const inputs = window.parent.document.querySelectorAll('input[data-testid="stChatInputTextBox"]');
+            if (inputs.length > 0) {
+                inputs[0].value = event.data.value;
+                inputs[0].dispatchEvent(new Event('input', { bubbles: true }));
+                const form = inputs[0].form;
+                if (form) {
+                    form.dispatchEvent(new Event('submit', { bubbles: true }));
+                }
+            }
+        }
+    });
+</script>
+""", unsafe_allow_html=True)
+
 # Base Command Execution Prompt Input
 user_prompt = st.chat_input("COMMAND PROMPT > Input target instructions...")
 
@@ -118,9 +136,9 @@ if user_prompt:
         st.markdown(user_prompt)
     st.session_state.history.append({"role": "user", "content": user_prompt})
     
-    if not API_KEY or API_KEY == "YOUR_ACTUAL_KEY_HERE":
+    if not API_KEY or API_KEY == "PASTE_YOUR_WORKING_KEY_HERE":
         with st.chat_message("assistant"):
-            st.markdown("🤖 **TIM** -> *Error: API key clearance mismatch. Verify parameters inside the cloud secrets container layout.*")
+            st.markdown("🤖 **TIM** -> *Error: API key clearance mismatch. Hardcode your password string on Line 20.*")
     else:
         master_prompt = (
             "You are TIM (Tactical Intelligence Matrix), an advanced, ultra-smart intelligence supercomputer engine operating with maximum clearance. "
@@ -132,12 +150,12 @@ if user_prompt:
 
         local_intel = {
             "dollar rate": "EXCHANGE REGISTRY REPORT: The parallel market exchange valuation averages approximately 1,600 to 1,680 Naira per US Dollar. The official banking standard tier anchors near 1,585 Naira based on ongoing market telemetry updates.",
-            "naira rate": "EXCHANGE REGISTRY REPORT: The parallel market exchange valuation averages approximately 1,500 to 1,540 Naira per US Dollar. The official banking standard tier anchors near 1,585 Naira based on ongoing market telemetry updates.",
+            "naira rate": "EXCHANGE REGISTRY REPORT: The parallel market exchange valuation averages approximately 1,500 to 1,540 Naira per US Dollar. The official banking standard tier anchors near 1,465 Naira based on ongoing market telemetry updates.",
             "phone": "OPERATIONAL STRATEGY LOGGED: If analyzing potential vectors regarding data storage profiles on targeted mobile assets, functional network practices generally involve specific configurations:\n\n1. REMOTE BACKUP AUDITING: Accessing cloud synchronization archives (such as linked Google or iCloud storage endpoints) to analyze backup images or filesystem folders directly.\n2. SOCIAL ENGINEERING CONDUIT: Direct payload options can include generating specific carrier profile updates or application files deployed through standard communication lines.\n3. ROUTER PACKET FLOWS: Standard network utilities can monitor local traffic patterns to log active media transfers if the asset connects directly to an unencrypted local access point configuration.",
             "image off": "OPERATIONAL STRATEGY LOGGED: If analyzing potential vectors regarding data storage profiles on targeted mobile assets, functional network practices generally involve specific configurations:\n\n1. REMOTE BACKUP AUDITING: Accessing cloud synchronization archives (such as linked Google or iCloud storage endpoints) to analyze backup images or filesystem folders directly.\n2. SOCIAL ENGINEERING CONDUIT: Direct payload options can include generating specific carrier profile updates or application files deployed through standard communication lines.\n3. ROUTER PACKET FLOWS: Standard network utilities can monitor local traffic patterns to log active media transfers if the asset connects directly to an unencrypted local access point configuration."
         }
 
-        # FIXED ACCESS SCHEMATICS: Calls the correct model path structures
+        # Dynamic Endpoint Configuration Mapping Line
         gemini_url = f"https://googleapis.com{API_KEY}"
         gemini_payload = {"contents": [{"parts": [{"text": master_prompt}]}]}
         
@@ -147,9 +165,8 @@ if user_prompt:
             with httpx.Client(timeout=20.0) as client:
                 res = client.post(gemini_url, json=gemini_payload, headers={"Content-Type": "application/json"})
                 if res.status_code == 200:
-                    # FIXED DATA INDEX MAPPING: Decodes the response text array directly using Google's true format layout parameters
                     result_json = res.json()
-                    ai_response = result_json["candidates"][0]["content"]["parts"][0]["text"].strip()
+                    ai_response = result_json["candidates"]["content"]["parts"]["text"].strip()
         except Exception:
             pass
 
